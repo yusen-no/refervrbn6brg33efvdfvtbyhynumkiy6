@@ -1,6 +1,6 @@
 <!-- 引用獨立模組檔 -->
     <script type="module">
-        import { materials } from './material.js';
+        import { materialDatabase } from './material.js';
         import { absorptionOfLight } from './file_1.js';
 
         // 確保網頁 DOM 元素都載入完成後才執行
@@ -48,7 +48,7 @@
                 // 材料標籤
                 ctx.fillStyle = '#ffffff';
                 ctx.font = '14px Arial';
-                ctx.fillText(`Material (${thickness} mm)`, matX + 10, matY - 10);
+                ctx.fillText(`materialDatabase (${thickness} mm)`, matX + 10, matY - 10);
 
                 // 3. 入射光 (左側，固定 100% 亮度)
                 ctx.strokeStyle = 'rgba(255, 255, 0, 1.0)';
