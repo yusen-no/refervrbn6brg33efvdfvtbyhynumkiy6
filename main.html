@@ -1,9 +1,104 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optical Absorption Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section-box {
+            background: #121212;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        .visualization-box {
+            text-align: center;
+            margin-top: 20px;
+        }
+        canvas {
+            background-color: #050505;
+            border: 1px solid #444;
+            border-radius: 6px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 上方標題與導言區塊 -->
+    <div class="section-box">
+        <h1>Optical Absorption Simulator</h1>
+        <p><em>Demonstration of optical power absorption and intensity attenuation through semiconductor materials.</em></p>
+    </div>
+
+    <!-- 中間控制器與 2D 視覺化區塊 -->
+    <div class="section-box">
+        <div class="control-group">
+            <label for="materialSelect">Material:</label>
+            <select id="materialSelect">
+                <option value="Si">Silicon (Si)</option>
+                <option value="InGaAs">InGaAs</option>
+                <option value="Ge">Germanium (Ge)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="wavelengthRange">Wavelength: <span id="wavelengthVal">1.00</span> µm</label>
+            <input type="range" id="wavelengthRange" min="0.4" max="2.0" step="0.01" value="1.0">
+        </div>
+
+        <div class="control-group">
+            <label for="thicknessRange">Thickness: <span id="thicknessVal">5.0</span> mm</label>
+            <input type="range" id="thicknessRange" min="0.0" max="10.0" step="0.1" value="5.0">
+        </div>
+
+        <!-- 2D 畫布區塊 -->
+        <div class="visualization-box">
+            <canvas id="simCanvas" width="700" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- 下方補充資料與筆記區塊 -->
+    <div class="section-box">
+        <h3>Supplementary Material & Notes</h3>
+        <p><em>Formula: I(d) = I₀ · e^(-αd)</em></p>
+    </div>
+
+    <!-- 引用獨立模組檔 -->
     <script type="module">
-        import { materialDatabase } from './material.js';
+        import { materials } from './material.js';
         import { absorptionOfLight } from './file_1.js';
 
-        // 確保網頁 DOM 元素都載入完成後才執行
         window.addEventListener('DOMContentLoaded', () => {
             const materialSelect = document.getElementById('materialSelect');
             const wavelengthRange = document.getElementById('wavelengthRange');
@@ -32,7 +127,7 @@
                     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
                 }
 
-                // 2. 算材料繪製寬度（厚度滑條 0~10 mm 映射到 20~200 px）
+                // 2. 材料繪製寬度（厚度 0.0 ~ 10.0 mm 映射到畫布寬度）
                 const matWidth = 20 + (thickness / 10.0) * 180;
                 const matX = 250;
                 const matY = 40;
@@ -45,12 +140,12 @@
                 ctx.lineWidth = 2;
                 ctx.strokeRect(matX, matY, matWidth, matHeight);
 
-                // 材料標籤
+                // 材料標籤 (顯示毫米 mm)
                 ctx.fillStyle = '#ffffff';
                 ctx.font = '14px Arial';
-                ctx.fillText(`materialDatabase (${thickness} mm)`, matX + 10, matY - 10);
+                ctx.fillText(`Material (${thickness} mm)`, matX + 10, matY - 10);
 
-                // 3. 入射光 (左側，固定 100% 亮度)
+                // 3. 入射光 (左側射入材料左界，固定 100% 亮度)
                 ctx.strokeStyle = 'rgba(255, 255, 0, 1.0)';
                 ctx.lineWidth = 8;
                 ctx.beginPath();
@@ -58,15 +153,9 @@
                 ctx.lineTo(matX, matY + matHeight / 2);
                 ctx.stroke();
 
-                // 4. 材料內部光強度衰減繪製
-                ctx.strokeStyle = `rgba(255, 255, 0, ${Math.max(transmission, 0.15)})`;
-                ctx.beginPath();
-                ctx.moveTo(matX, matY + matHeight / 2);
-                ctx.lineTo(matX + matWidth, matY + matHeight / 2);
-                ctx.stroke();
-
-                // 5. 穿透光 (右側，透明度根據衰減結果 a 決定)
+                // 4. 透射光 (材料右界射出，透明度由計算結果 transmission 決定)
                 ctx.strokeStyle = `rgba(255, 255, 0, ${transmission})`;
+                ctx.lineWidth = 8;
                 ctx.beginPath();
                 ctx.moveTo(matX + matWidth, matY + matHeight / 2);
                 ctx.lineTo(650, matY + matHeight / 2);
@@ -82,7 +171,7 @@
 
                 const selectedMat = materials[materialSelect.value];
 
-                // 呼叫 file_1.js 裡的計算函式
+                // 呼叫 file_1.js 進行計算
                 const transmission = absorptionOfLight(
                     tVal,
                     selectedMat.maxWavelength,
@@ -90,7 +179,6 @@
                     selectedMat.directBandGap
                 );
 
-                // 繪製結果
                 drawSimulation(transmission, tVal);
             }
 
@@ -98,7 +186,8 @@
             wavelengthRange.addEventListener('input', updateUI);
             thicknessRange.addEventListener('input', updateUI);
 
-            // 初次渲染
             updateUI();
         });
     </script>
+</body>
+</html>
