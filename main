@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optical Absorption Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000; /* 黑底風格 */
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section-box {
+            background: #121212;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        /* 2D 座標系視覺化區域 */
+        .visualization-canvas {
+            position: relative;
+            height: 250px;
+            background: #050505;
+            border: 1px solid #444;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====================================================== -->
+    <!-- [PLACEHOLDER: TOP HEADER & DESCRIPTION]                -->
+    <!-- 預留區：請在此填寫你的標題與導言資訊                         -->
+    <!-- ====================================================== -->
+    <div class="section-box">
+        <h1>Optical Absorption Simulator</h1>
+        <p><em>[Your title description, introduction, or model explanation goes here.]</em></p>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- MAIN INTERACTIVE SECTION (CONTROLS + 2D CANVAS)        -->
+    <!-- 核心區：控制器與 2D 座標視覺化                           -->
+    <!-- ====================================================== -->
+    <div class="section-box">
+        <!-- 1. 材料選擇選單 -->
+        <div class="control-group">
+            <label for="materialSelect">Material:</label>
+            <select id="materialSelect">
+                <option value="Si">Silicon (Si)</option>
+                <option value="InGaAs">InGaAs</option>
+                <option value="Ge">Germanium (Ge)</option>
+            </select>
+        </div>
+
+        <!-- 2. 入射光波長滑條 (單位: µm) -->
+        <div class="control-group">
+            <label for="wavelengthRange">Wavelength: <span id="wavelengthVal">1.00</span> µm</label>
+            <input type="range" id="wavelengthRange" min="0.4" max="2.0" step="0.01" value="1.0">
+        </div>
+
+        <!-- 3. 厚度滑條 (單位: µm) -->
+        <div class="control-group">
+            <label for="thicknessRange">Thickness: <span id="thicknessVal">50</span> µm</label>
+            <input type="range" id="thicknessRange" min="0" max="500" step="1" value="50">
+        </div>
+
+        <!-- 4. 2D 座標系與光束視覺化區域 -->
+        <div class="visualization-canvas" id="simCanvas">
+            <!-- 未來放置 2D 座標軸、材料區塊與動態光束的地方 -->
+            <span style="color: #666; font-size: 0.9em;">[2D Coordinate System & Beam Visualization Area]</span>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- [PLACEHOLDER: BOTTOM SUPPLEMENTARY DATA]               -->
+    <!-- 預留區：請在此填寫下方的補充資料、公式或筆記                   -->
+    <!-- ====================================================== -->
+    <div class="section-box">
+        <h3>Supplementary Material & Notes</h3>
+        <p><em>[Your formulas, notes, or reference details go here.]</em></p>
+    </div>
+
+    <!-- 引用外部模組檔 -->
+    <script type="module">
+        // 從你的獨立檔案匯入材料資料與核心邏輯
+        import { materials } from './material.js';
+        import { absorptionOfLight } from './file_1/physics.js'; // 請依真實檔名修正檔名
+
+        const materialSelect = document.getElementById('materialSelect');
+        const wavelengthRange = document.getElementById('wavelengthRange');
+        const thicknessRange = document.getElementById('thicknessRange');
+        const wavelengthVal = document.getElementById('wavelengthVal');
+        const thicknessVal = document.getElementById('thicknessVal');
+
+        function updateUI() {
+            wavelengthVal.textContent = parseFloat(wavelengthRange.value).toFixed(2);
+            thicknessVal.textContent = thicknessRange.value;
+
+            // 取用匯入的資料與運算邏輯
+            const selectedMat = materials[materialSelect.value];
+            const wavelength = parseFloat(wavelengthRange.value);
+            const thickness = parseFloat(thicknessRange.value);
+
+            const a = absorptionOfLight(
+                thickness,
+                selectedMat.maxWavelength,
+                wavelength,
+                selectedMat.directBandGap
+            );
+
+            // 這裡後續可以把 a 套用到穿透光的透明度 (opacity)
+        }
+
+        materialSelect.addEventListener('change', updateUI);
+        wavelengthRange.addEventListener('input', updateUI);
+        thicknessRange.addEventListener('input', updateUI);
+
+        updateUI();
+    </script>
+
+</body>
+</html>
