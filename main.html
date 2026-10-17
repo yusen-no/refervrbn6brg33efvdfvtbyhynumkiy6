@@ -1,95 +1,104 @@
 <!-- 引用獨立模組檔 -->
     <script type="module">
-        import { materialDatabase } from './material.js';
+        import { materials } from './material.js';
         import { absorptionOfLight } from './file_1.js';
 
-        const materialSelect = document.getElementById('materialSelect');
-        const wavelengthRange = document.getElementById('wavelengthRange');
-        const thicknessRange = document.getElementById('thicknessRange');
-        const wavelengthVal = document.getElementById('wavelengthVal');
-        const thicknessVal = document.getElementById('thicknessVal');
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function drawSimulation(transmission, thickness) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. 繪製背景網格與 2D 座標軸
-            ctx.strokeStyle = '#222222';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 50) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 50) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+        // 確保網頁 DOM 元素都載入完成後才執行
+        window.addEventListener('DOMContentLoaded', () => {
+            const materialSelect = document.getElementById('materialSelect');
+            const wavelengthRange = document.getElementById('wavelengthRange');
+            const thicknessRange = document.getElementById('thicknessRange');
+            const wavelengthVal = document.getElementById('wavelengthVal');
+            const thicknessVal = document.getElementById('thicknessVal');
+            const canvas = document.getElementById('simCanvas');
+            
+            if (!canvas) {
+                console.error("找不到 simCanvas 元素！");
+                return;
             }
 
-            // 2. 算材料繪製寬度（厚度滑條 0~10 mm 映射到 20~200 px）
-            const matWidth = 20 + (thickness / 10.0) * 180;
-            const matX = 250;
-            const matY = 40;
-            const matHeight = 120;
+            const ctx = canvas.getContext('2d');
 
-            // 繪製材料區塊
-            ctx.fillStyle = 'rgba(70, 130, 180, 0.6)';
-            ctx.fillRect(matX, matY, matWidth, matHeight);
-            ctx.strokeStyle = '#6495ED';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(matX, matY, matWidth, matHeight);
+            function drawSimulation(transmission, thickness) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 材料標籤
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '14px Arial';
-            ctx.fillText(`materialDatabase (${thickness} mm)`, matX + 10, matY - 10);
+                // 1. 繪製背景網格與 2D 座標軸
+                ctx.strokeStyle = '#222222';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < canvas.width; x += 50) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += 50) {
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+                }
 
-            // 3. 入射光 (左側，固定 100% 亮度)
-            ctx.strokeStyle = 'rgba(255, 255, 0, 1.0)';
-            ctx.lineWidth = 8;
-            ctx.beginPath();
-            ctx.moveTo(50, matY + matHeight / 2);
-            ctx.lineTo(matX, matY + matHeight / 2);
-            ctx.stroke();
+                // 2. 算材料繪製寬度（厚度滑條 0~10 mm 映射到 20~200 px）
+                const matWidth = 20 + (thickness / 10.0) * 180;
+                const matX = 250;
+                const matY = 40;
+                const matHeight = 120;
 
-            // 4. 材料內部光強度衰減繪製
-            ctx.strokeStyle = `rgba(255, 255, 0, ${Math.max(transmission, 0.15)})`;
-            ctx.beginPath();
-            ctx.moveTo(matX, matY + matHeight / 2);
-            ctx.lineTo(matX + matWidth, matY + matHeight / 2);
-            ctx.stroke();
+                // 繪製材料區塊
+                ctx.fillStyle = 'rgba(70, 130, 180, 0.6)';
+                ctx.fillRect(matX, matY, matWidth, matHeight);
+                ctx.strokeStyle = '#6495ED';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(matX, matY, matWidth, matHeight);
 
-            // 5. 穿透光 (右側，透明度根據衰減結果 a 決定，不顯示數字)
-            ctx.strokeStyle = `rgba(255, 255, 0, ${transmission})`;
-            ctx.beginPath();
-            ctx.moveTo(matX + matWidth, matY + matHeight / 2);
-            ctx.lineTo(650, matY + matHeight / 2);
-            ctx.stroke();
-        }
+                // 材料標籤
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px Arial';
+                ctx.fillText(`Material (${thickness} mm)`, matX + 10, matY - 10);
 
-        function updateUI() {
-            const wVal = parseFloat(wavelengthRange.value);
-            const tVal = parseFloat(thicknessRange.value);
+                // 3. 入射光 (左側，固定 100% 亮度)
+                ctx.strokeStyle = 'rgba(255, 255, 0, 1.0)';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(50, matY + matHeight / 2);
+                ctx.lineTo(matX, matY + matHeight / 2);
+                ctx.stroke();
 
-            wavelengthVal.textContent = wVal.toFixed(2);
-            thicknessVal.textContent = tVal.toFixed(1);
+                // 4. 材料內部光強度衰減繪製
+                ctx.strokeStyle = `rgba(255, 255, 0, ${Math.max(transmission, 0.15)})`;
+                ctx.beginPath();
+                ctx.moveTo(matX, matY + matHeight / 2);
+                ctx.lineTo(matX + matWidth, matY + matHeight / 2);
+                ctx.stroke();
 
-            const selectedMat = materials[materialSelect.value];
+                // 5. 穿透光 (右側，透明度根據衰減結果 a 決定)
+                ctx.strokeStyle = `rgba(255, 255, 0, ${transmission})`;
+                ctx.beginPath();
+                ctx.moveTo(matX + matWidth, matY + matHeight / 2);
+                ctx.lineTo(650, matY + matHeight / 2);
+                ctx.stroke();
+            }
 
-            // 呼叫 file_1.js 裡的計算函式
-            const transmission = absorptionOfLight(
-                tVal,
-                selectedMat.maxWavelength,
-                wVal,
-                selectedMat.directBandGap
-            );
+            function updateUI() {
+                const wVal = parseFloat(wavelengthRange.value);
+                const tVal = parseFloat(thicknessRange.value);
 
-            // 繪製結果
-            drawSimulation(transmission, tVal);
-        }
+                wavelengthVal.textContent = wVal.toFixed(2);
+                thicknessVal.textContent = tVal.toFixed(1);
 
-        materialSelect.addEventListener('change', updateUI);
-        wavelengthRange.addEventListener('input', updateUI);
-        thicknessRange.addEventListener('input', updateUI);
+                const selectedMat = materials[materialSelect.value];
 
-        // 初次渲染
-        updateUI();
+                // 呼叫 file_1.js 裡的計算函式
+                const transmission = absorptionOfLight(
+                    tVal,
+                    selectedMat.maxWavelength,
+                    wVal,
+                    selectedMat.directBandGap
+                );
+
+                // 繪製結果
+                drawSimulation(transmission, tVal);
+            }
+
+            materialSelect.addEventListener('change', updateUI);
+            wavelengthRange.addEventListener('input', updateUI);
+            thicknessRange.addEventListener('input', updateUI);
+
+            // 初次渲染
+            updateUI();
+        });
     </script>
