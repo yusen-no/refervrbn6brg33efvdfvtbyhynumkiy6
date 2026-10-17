@@ -96,7 +96,7 @@
 
     <!-- 引用獨立模組檔 -->
     <script type="module">
-        import { materialDatabase  } from './material.js';
+        import { materialDatabase } from './material.js';
         import { absorptionOfLight } from './file_1.js';
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -140,10 +140,10 @@
                 ctx.lineWidth = 2;
                 ctx.strokeRect(matX, matY, matWidth, matHeight);
 
-                // 材料標籤 (顯示毫米 mm)
+                // 材料標籤 (顯示選擇的材料與毫米 mm 厚度)
                 ctx.fillStyle = '#ffffff';
                 ctx.font = '14px Arial';
-                ctx.fillText(`{materialSelect.value} (${thickness} mm)`, matX + 10, matY - 10);
+                ctx.fillText(`${materialSelect.value} (${thickness} mm)`, matX + 10, matY - 10);
 
                 // 3. 入射光 (左側射入材料左界，固定 100% 亮度)
                 ctx.strokeStyle = 'rgba(255, 255, 0, 1.0)';
@@ -169,18 +169,15 @@
                 wavelengthVal.textContent = wVal.toFixed(2);
                 thicknessVal.textContent = tVal.toFixed(1);
 
-                const selectedMat = materialDatabase [materialSelect.value];
+                const selectedMat = materialDatabase[materialSelect.value];
 
-                // 呼叫 file_1.js 進行計算
+                // 呼叫 file_1.js 進行計算（參數對應 material.js 的正確屬性名稱）
                 const transmission = absorptionOfLight(
                     tVal,
-                    selectedMat.maxWavelength,
+                    selectedMat.maximum_wavelength,
                     wVal,
-                    selectedMat.directBandGap
+                    selectedMat.direct_band_gap
                 );
-            
-                console.log("當前計算出的 transmission:", transmission); // 印出來看看
-               
 
                 drawSimulation(transmission, tVal);
             }
