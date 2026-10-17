@@ -112,8 +112,8 @@
     <!-- 引用外部模組檔 -->
     <script type="module">
         // 從你的獨立檔案匯入材料資料與核心邏輯
-        import { materials } from './material.js';
-        import { absorptionOfLight } from './file_1/physics.js'; // 請依真實檔名修正檔名
+        import { materialDatabase } from './material.js';
+        import { absorptionOfLight } from './file_1.js'; // 請依真實檔名修正檔名
 
         const materialSelect = document.getElementById('materialSelect');
         const wavelengthRange = document.getElementById('wavelengthRange');
