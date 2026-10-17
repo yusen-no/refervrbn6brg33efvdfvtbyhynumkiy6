@@ -169,7 +169,7 @@
                 wavelengthVal.textContent = wVal.toFixed(2);
                 thicknessVal.textContent = tVal.toFixed(1);
 
-                const selectedMat = materials[materialSelect.value];
+                const selectedMat = materialDatabase [materialSelect.value];
 
                 // 呼叫 file_1.js 進行計算
                 const transmission = absorptionOfLight(
