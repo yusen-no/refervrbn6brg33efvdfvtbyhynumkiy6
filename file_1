@@ -2,7 +2,7 @@ export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_l
     let a;
     
     if (wavelength_of_light > maximum_wavelength) {
-        a = 0.0;
+        alpha = 0.0;
     } else {
         let intermediate = (1 / wavelength_of_light) - (1 / maximum_wavelength);
         let alpha;
