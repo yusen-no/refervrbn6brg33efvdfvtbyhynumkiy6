@@ -55,12 +55,45 @@
 </head>
 <body>
 
-    <!-- 上方標題與導言區塊 -->
+    <!-- 上方標題區塊 -->
     <div class="section-box">
         <h1>Optical Absorption Simulator</h1>
-        <p><em>Demonstration of optical power absorption and intensity attenuation through semiconductor materials.</em></p>
     </div>
 
+    <!-- 下方物理機制與數學模型區塊 -->
+    <div class="section-box" style="margin-top: 20px;">
+        <h2>Physical Mechanisms and Mathematical Models</h2>
+        <p>Optical absorption and intensity attenuation are fundamentally determined by the interaction between <strong>material properties</strong>, <strong>photon energy</strong>, and <strong>absorber thickness</strong>:</p>
+
+        <h3>1. Energy Threshold and Basic Condition</h3>
+        <ul>
+            <li>The band gap <em>E<sub>g</sub></em> of a semiconductor (corresponding to the maximum wavelength <em>&lambda;<sub>max</sub></em>) establishes the fundamental threshold for optical absorption.</li>
+            <li>For photon energies below the band gap (&hbar;&omega; &lt; <em>E<sub>g</sub></em>, or wavelengths greater than <em>&lambda;<sub>max</sub></em>), the absorption coefficient is zero (&alpha; = 0), rendering the material completely transparent.</li>
+            <li>Optical absorption only occurs when the photon energy meets or exceeds the band gap (&hbar;&omega; &ge; <em>E<sub>g</sub></em>).</li>
+        </ul>
+
+        <h3>2. Absorption Coefficients and Band Structure Mechanisms</h3>
+        <p>Once the energy threshold is satisfied, the growth rate of the absorption coefficient &alpha; depends heavily on the crystal's electronic band structure:</p>
+        <ul>
+            <li>
+                <strong>Direct Band Gap Materials</strong> (e.g., InGaAs): Electron transitions occur directly at the zone center where <em>k</em> = 0. The absorption coefficient is proportional to the square root of the energy difference:
+                <br>
+                <code>&alpha;(&hbar;&omega;) &propto; (&hbar;&omega; - E<sub>g</sub>)<sup>1/2</sup></code>
+            </li>
+            <li style="margin-top: 8px;">
+                <strong>Indirect Band Gap Materials</strong> (e.g., Silicon, Germanium): The conduction band minimum occurs away from <em>k</em> = 0, requiring lattice vibrations (phonons) to assist with momentum conservation. The absorption coefficient is proportional to the squared energy difference:
+                <br>
+                <code>&alpha;<sup>indirect</sup>(&hbar;&omega;) &propto; (&hbar;&omega; - E<sub>g</sub> &mp; &hbar;&Omega;)<sup>2</sup></code>
+            </li>
+        </ul>
+
+        <h3>3. Exponential Intensity Attenuation (Beer-Lambert Law)</h3>
+        <p>As photons with sufficient energy propagate through the material, light intensity experiences cumulative exponential decay with penetration depth (<em>z</em>). This is described by the <strong>Beer-Lambert Law</strong>:</p>
+        <p style="text-align: center; font-family: monospace; background-color: #f5f5f5; padding: 8px; border-radius: 4px;">
+            I(z) = I<sub>0</sub> &middot; e<sup>-&alpha;z</sup>
+        </p>
+        <p>Where <em>I<sub>0</sub></em> represents the incident light intensity, and &alpha; is the absorption coefficient determined by photon energy and material characteristics. This law dictates the exact fraction of light absorbed versus the remaining transmitted intensity.</p>
+    </div>
     <!-- 中間控制器與 2D 視覺化區塊 -->
     <div class="section-box">
         <div class="control-group">
