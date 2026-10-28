@@ -1,4 +1,4 @@
-export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_light, direct_band_gap = true) {
+export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_light, c, direct_band_gap = true) {
     let a;
     let alpha;
     let c;
