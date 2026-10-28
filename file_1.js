@@ -18,7 +18,7 @@ export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_l
         
     
     }
-    a = Math.exp(-alpha * thickness);
+    a = c*Math.exp(-alpha * thickness);
     
     return a;
 }
