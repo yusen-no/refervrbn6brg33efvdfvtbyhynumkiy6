@@ -11,15 +11,15 @@ export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_l
         
         
         if (direct_band_gap === true) {
-            alpha = Math.pow(1.24 * intermediate, 0.5); 
+            alpha = c*Math.pow(1.24 * intermediate, 0.5); 
         } 
         else if (direct_band_gap === false) {
-            alpha = Math.pow(1.24 * intermediate, 2);    
+            alpha = c*Math.pow(1.24 * intermediate, 2);    
         }
         
     
     }
-    a = c*Math.exp(-alpha * thickness);
+    a = Math.exp(-alpha * thickness);
     
     return a;
 }
