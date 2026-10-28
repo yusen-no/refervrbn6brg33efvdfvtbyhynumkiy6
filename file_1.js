@@ -1,7 +1,8 @@
 export function absorptionOfLight(thickness, maximum_wavelength, wavelength_of_light, direct_band_gap = true) {
     let a;
     let alpha;
-    
+    let c;
+
     if (wavelength_of_light > maximum_wavelength) {
         alpha = 0.0;
     } 
